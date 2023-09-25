@@ -1,12 +1,12 @@
 use std::rc::Rc;
 
-use game::{EndStatus, Player, Selection, TictactoeGame};
+use game::{EndStatus, Player, Action, TictactoeGame};
 
 impl mcts::EndStatus for EndStatus {}
-impl mcts::Selection for Selection {}
+impl mcts::Action for Action {}
 
 impl mcts::Player<EndStatus> for Player {
-    fn reward_if_outcome_is(&self, outcome: &EndStatus) -> f32 {
+    fn reward_when_outcome_is(&self, outcome: &EndStatus) -> f32 {
         match outcome {
             EndStatus::Win(winner) => {
                 if self == winner {
@@ -20,7 +20,7 @@ impl mcts::Player<EndStatus> for Player {
     }
 }
 
-impl mcts::GameState<Player, EndStatus, Selection> for TictactoeGame {
+impl mcts::GameState<Player, EndStatus, Action> for TictactoeGame {
     fn end_status(&self) -> Option<EndStatus> {
         self.end_status
     }
@@ -29,11 +29,19 @@ impl mcts::GameState<Player, EndStatus, Selection> for TictactoeGame {
         return self.player;
     }
 
-    fn selections(&self) -> Vec<Selection> {
-        self.selections()
+    fn possible_actions(&self) -> Vec<Action> {
+        let mut possible_actions = Vec::new();
+        for row in 0..3 {
+            for col in 0..3 {
+                if !self.occupied(Action(row, col)) {
+                    possible_actions.push(Action(row, col));
+                }
+            }
+        }
+        possible_actions
     }
 
-    fn select(&self, selection: &Selection) -> Self {
+    fn act(&self, selection: &Action) -> Self {
         self.place(&selection).unwrap()
     }
 }
@@ -73,7 +81,7 @@ mod game {
     }
 
     #[derive(PartialEq, Eq, Clone, Copy)]
-    pub struct Selection(usize, usize);
+    pub struct Action(pub usize, pub usize);
 
     pub struct TictactoeGame {
         pub board: [[Option<Player>; 3]; 3],
@@ -130,13 +138,13 @@ mod game {
             }
         }
 
-        fn occupied(&self, selection: Selection) -> bool {
-            let Selection(row, col) = selection;
+        pub fn occupied(&self, selection: Action) -> bool {
+            let Action(row, col) = selection;
             self.board[row][col].is_some()
         }
 
-        pub fn place(&self, selection: &Selection) -> Result<TictactoeGame, &str> {
-            let Selection(row, col) = *selection;
+        pub fn place(&self, selection: &Action) -> Result<TictactoeGame, &str> {
+            let Action(row, col) = *selection;
             match self.board[row][col] {
                 Some(_) => Err("invalid place"),
                 None => {
@@ -151,18 +159,6 @@ mod game {
                     Ok(game)
                 }
             }
-        }
-
-        pub fn selections(&self) -> Vec<Selection> {
-            let mut selections = Vec::new();
-            for row in 0..3 {
-                for col in 0..3 {
-                    if !self.occupied(Selection(row, col)) {
-                        selections.push(Selection(row, col));
-                    }
-                }
-            }
-            selections
         }
 
         pub fn draw_board(&self) {

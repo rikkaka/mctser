@@ -1,6 +1,10 @@
 [package]
 name = "mcts"
 version = "0.1.0"
+authors = ["Rikkaka <dsywh123@gmail.com>"]
+license = "MIT"
+description = "An incridiblely easy-to-use library for Monte Carlo Tree Search"
+readme = "README.md"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
