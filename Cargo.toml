@@ -1,10 +1,14 @@
 [package]
 name = "mcts"
 version = "0.1.0"
-authors = ["Rikkaka <dsywh123@gmail.com>"]
+authors = ["rikkaka <dsywh123@gmail.com>"]
 license = "MIT"
 description = "An incridiblely easy-to-use library for Monte Carlo Tree Search"
 readme = "README.md"
+homepage = "https://github.com/rikkaka/mcts"
+repository = "https://github.com/rikkaka/mcts"
+keywords = ["mcts", "monte carlo tree search", "game ai"]
+categories = ["algorithms", "game ai"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
