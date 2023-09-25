@@ -26,7 +26,7 @@ impl mcts::GameState<Player, EndStatus, Action> for TictactoeGame {
     }
 
     fn player(&self) -> Player {
-        return self.player;
+        self.player
     }
 
     fn possible_actions(&self) -> Vec<Action> {
@@ -42,7 +42,7 @@ impl mcts::GameState<Player, EndStatus, Action> for TictactoeGame {
     }
 
     fn act(&self, selection: &Action) -> Self {
-        self.place(&selection).unwrap()
+        self.place(selection).unwrap()
     }
 }
 

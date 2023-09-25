@@ -37,6 +37,8 @@ where
     fn act(&self, action: &A) -> Self;
 }
 
+type RcNode<P, G, E, A> = Rc<RefCell<Node<P, G, E, A>>>;
+
 pub struct SearchTree<P, G, E, A>
 where
     P: Player<E>,
@@ -44,7 +46,7 @@ where
     E: EndStatus,
     A: Action,
 {
-    root_node: Rc<RefCell<Node<P, G, E, A>>>,
+    root_node: RcNode<P, G, E, A>,
 }
 
 pub struct Node<P, G, E, A>
@@ -56,7 +58,7 @@ where
 {
     state: Rc<G>,
     last_action: Option<A>,
-    child_nodes: RefCell<Vec<Rc<RefCell<Node<P, G, E, A>>>>>,
+    child_nodes: RefCell<Vec<RcNode<P, G, E, A>>>,
 
     /// times of win
     wi: Cell<f32>,
@@ -100,8 +102,7 @@ where
         }
         let selected_node = root_node.select_most_visited();
         selected_node
-            .map(|v| v.borrow().last_action.clone())
-            .flatten()
+            .and_then(|v| v.borrow().last_action.clone())
     }
 
     /// Renew the root node
@@ -128,7 +129,7 @@ where
     }
 
     /// Get the root node
-    pub fn root_node(&self) -> Rc<RefCell<Node<P, G, E, A>>> {
+    pub fn root_node(&self) -> RcNode<P, G, E, A> {
         self.root_node.clone()
     }
 }
@@ -167,7 +168,7 @@ where
         }
     }
 
-    fn derive_child(&self, action: A) -> Rc<RefCell<Node<P, G, E, A>>> {
+    fn derive_child(&self, action: A) -> RcNode<P, G, E, A> {
         Rc::new(RefCell::new(Node {
             state: Rc::new(self.state.act(&action)),
             last_action: Some(action),
@@ -178,7 +179,7 @@ where
         }))
     }
 
-    fn find_child(&self, action: &A) -> Option<Rc<RefCell<Node<P, G, E, A>>>> {
+    fn find_child(&self, action: &A) -> Option<RcNode<P, G, E, A>> {
         for node in self.child_nodes.borrow().iter() {
             if node.borrow().last_action == Some(action.clone()) {
                 return Some(node.clone());
@@ -187,7 +188,7 @@ where
         None
     }
 
-    fn select(&self) -> Option<Rc<RefCell<Node<P, G, E, A>>>> {
+    fn select(&self) -> Option<RcNode<P, G, E, A>> {
         for node in self.child_nodes.borrow().iter() {
             if node.borrow().ni.get() == 0. {
                 return Some(node.clone());
@@ -209,7 +210,7 @@ where
         selected_node
     }
 
-    fn select_most_visited(&self) -> Option<Rc<RefCell<Node<P, G, E, A>>>> {
+    fn select_most_visited(&self) -> Option<RcNode<P, G, E, A>> {
         let mut times_visted_max = f32::MIN;
         let mut selected_node = None;
         for node in self.child_nodes.borrow().iter() {
@@ -266,7 +267,7 @@ where
         self.state.clone()
     }
 
-    pub fn child_nodes(&self) -> Vec<Rc<RefCell<Node<P, G, E, A>>>> {
+    pub fn child_nodes(&self) -> Vec<RcNode<P, G, E, A>> {
         self.child_nodes.borrow().clone()
     }
 
