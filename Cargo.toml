@@ -1,5 +1,5 @@
 [package]
-name = "mcts"
+name = "mctser"
 version = "0.1.0"
 authors = ["rikkaka <dsywh123@gmail.com>"]
 license = "MIT"

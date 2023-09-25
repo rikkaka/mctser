@@ -2,10 +2,10 @@ use std::rc::Rc;
 
 use game::{EndStatus, Player, Action, TictactoeGame};
 
-impl mcts::EndStatus for EndStatus {}
-impl mcts::Action for Action {}
+impl mctser::EndStatus for EndStatus {}
+impl mctser::Action for Action {}
 
-impl mcts::Player<EndStatus> for Player {
+impl mctser::Player<EndStatus> for Player {
     fn reward_when_outcome_is(&self, outcome: &EndStatus) -> f32 {
         match outcome {
             EndStatus::Win(winner) => {
@@ -20,7 +20,7 @@ impl mcts::Player<EndStatus> for Player {
     }
 }
 
-impl mcts::GameState<Player, EndStatus, Action> for TictactoeGame {
+impl mctser::GameState<Player, EndStatus, Action> for TictactoeGame {
     fn end_status(&self) -> Option<EndStatus> {
         self.end_status
     }
@@ -48,7 +48,7 @@ impl mcts::GameState<Player, EndStatus, Action> for TictactoeGame {
 
 fn main() {
     let mut game = Rc::new(TictactoeGame::new());
-    let mut search_tree = mcts::SearchTree::new(game.clone());
+    let mut search_tree = mctser::SearchTree::new(game.clone());
 
     while game.end_status.is_none() {
         let selected = search_tree.search(1000).unwrap();
