@@ -8,7 +8,7 @@ readme = "README.md"
 documentation = "https://docs.rs/mcts"
 homepage = "https://github.com/rikkaka/mcts"
 repository = "https://github.com/rikkaka/mcts"
-keywords = ["mcts", "monte carlo tree search", "game ai"]
+keywords = ["mcts", "game ai"]
 categories = ["algorithms", "game ai"]
 edition = "2021"
 
