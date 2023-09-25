@@ -8,8 +8,8 @@ readme = "README.md"
 documentation = "https://docs.rs/mcts"
 homepage = "https://github.com/rikkaka/mcts"
 repository = "https://github.com/rikkaka/mcts"
-keywords = ["mcts", "game ai"]
-categories = ["algorithms", "game ai"]
+keywords = ["mcts", "game_ai"]
+categories = ["algorithms", "game_ai"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
