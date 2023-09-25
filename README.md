@@ -4,8 +4,8 @@ An incrediblely easy-to-use library for Monte Carlo Tree Search.
 All you need to do is to implement traits `mcts::GameState` and `mcts::Action` and mark traits `mcts::EndStatus` and `mcts::Action` for corresponding types in your game.
 ## Usage
 Add the dependency to your Cargo.toml
-```toml
-mcts = { git = "https://github.com/rikkaka/mcts"}
+```sh
+cargo add mcts
 ```
 
 To use the library, you should implement traits `mcts::GameState` and `mcts::Action` and mark traits `mcts::EndStatus` and `mcts::Action` for corresponding types in your game. 
