@@ -1,6 +1,5 @@
 #![doc = include_str!("../README.md")]
 
-
 use std::{
     cell::{Cell, RefCell},
     fmt::Debug,
@@ -11,7 +10,7 @@ use std::{
 /// Like player1 wins, player2 wins, or tie
 pub trait EndStatus {}
 
-/// The trait for the action. 
+/// The trait for the action.
 /// For example, in tictactoe, the action is the coordinate of the next move
 pub trait Action: Eq + Clone {}
 
@@ -84,10 +83,7 @@ where
     }
 
     /// Set the tree policy
-    pub fn with_tree_policy(
-        self,
-        tree_policy: impl Fn(f32, f32, f32) -> f32 + 'static,
-    ) -> Self {
+    pub fn with_tree_policy(self, tree_policy: impl Fn(f32, f32, f32) -> f32 + 'static) -> Self {
         let mut root_node_borrow = self.root_node.borrow_mut();
         root_node_borrow.tree_policy = Rc::new(tree_policy);
         drop(root_node_borrow);
@@ -101,8 +97,7 @@ where
             root_node.simulate(&root_node.state.player());
         }
         let selected_node = root_node.select_most_visited();
-        selected_node
-            .and_then(|v| v.borrow().last_action.clone())
+        selected_node.and_then(|v| v.borrow().last_action.clone())
     }
 
     /// Renew the root node

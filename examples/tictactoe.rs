@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use game::{EndStatus, Player, Action, TictactoeGame};
+use game::{Action, EndStatus, Player, TictactoeGame};
 
 impl mctser::EndStatus for EndStatus {}
 impl mctser::Action for Action {}
