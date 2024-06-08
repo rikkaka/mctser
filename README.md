@@ -71,6 +71,7 @@ pub struct TictactoeGame {
     pub end_status: Option<EndStatus>,
 }
 ```
+
 To make the game playable, we need to implement a few necessary methods. [Here](/examples/tictactoe.rs#L61) to see the detailed implementation. Then we can implement the corresponding traits for the these types:
 ```rust, ignore
 impl mcts::EndStatus for EndStatus {}
@@ -117,15 +118,20 @@ impl mcts::GameState<Player, EndStatus, Action> for TictactoeGame {
     }
 }
 ```
-Then you can build a `mcts::SearchTree` and start to search. To make search records of preceding searches reused in the next move, using `mcts::SearchTree::renew()` to step forward.
+
+Then you can build a `mcts::SearchTree` and start to search. To make search records of preceding searches reused in the next move, using `mcts::SearchTree::renew` to step forward.
 ```rust, ignore
 fn main() {
+    // We use `RC` to store the game status. Create a new game and pass it to the search tree through `RC::clone()`.
     let mut game = Rc::new(TictactoeGame::new());
     let mut search_tree = mcts::SearchTree::new(game.clone());
 
     while game.end_status.is_none() {
+        // Make 1000 simulations to find the best move
         let selected = search_tree.search(1000).unwrap();
+        // Step forward to the next state using the action provided by the search tree
         search_tree.renew(&selected).unwrap();
+        // Get current game state after the move
         game = search_tree.get_game_state();
         game.draw_board();
     }
@@ -135,5 +141,9 @@ fn main() {
 The usage of this library is quite easy, isn't it?
 
 ## Todo
+- [ ] Add test cases
 - [ ] Support custom tree policy
-- [ ] add parallel search
+- [ ] Add parallel search
+
+## Contribution
+All kind of contributions are welcome. Feel free to open an issue or a pull request.
