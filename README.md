@@ -1,14 +1,14 @@
-# mcts
+# mctser
 An incrediblely easy-to-use library for Monte Carlo Tree Search.
 
-All you need to do is to implement traits `mcts::GameState` and `mcts::Action` and mark traits `mcts::EndStatus` and `mcts::Action` for corresponding types in your game.
+All you need to do is to implement four required traits in this library for corresponding types in your game.
 ## Usage
 Add the dependency to your Cargo.toml
 ```sh
 cargo add mcts
 ```
 
-To use the library, you should implement traits `mcts::GameState` and `mcts::Action` and mark traits `mcts::EndStatus` and `mcts::Action` for corresponding types in your game. 
+To use this library, two traits `mcts::GameState` and `mcts::Action`, and two marking traits `mcts::EndStatus` and `mcts::Action` need to be implemented for corresponding types in your game. The definations of the four traits are as follows.
 ```rust
 /// The trait for the end status of the game, like player1 wins, player2 wins, or tie
 pub trait EndStatus {}
@@ -38,10 +38,41 @@ where
     fn act(&self, action: &A) -> Self;
 }
 ```
-Here is an example for tic tac toe. The implemention of the mod `game` is hiden. [Here](/examples/tictactoe.rs) to see the full example.
-```rust, ignore
-use game::{EndStatus, Player, Action, TictactoeGame};
+Here is an example for tic tac toe. Some details of the example are hiden and [click here](/examples/tictactoe.rs) to see the full example. Clone this repository and `cargo run --example tictactoe` to see the game playing between two `mctser` bots.
 
+To use this crate, four types are needed:
+1. A type representing the status of the game. For tic tac toe, it would be the situation on the borad, the player of next move, if the game ends and who wins the game when it ends.
+2. A type representing the players. For tic tac toe, we can use an `enum` to representing the two players.
+3. A type representing possible actions. For tic tac toe, it would be the coordination of a move.
+4. A type representing the status of end of the game. For tic tac toe, it would be player1 win, player2 win, or tie.
+
+For these types, we have four corresponding traits in this crate, namely `GameState`, `Player`, `Action` and `EndStatus`, which you need to implement for your types.
+
+As a start, we can define the four needed types as follows:
+```rust
+#[derive(Clone, Copy)]
+pub enum EndStatus {
+    Win(Player),
+    Tie,
+}
+
+#[derive(PartialEq, Eq, Clone, Copy)]
+pub enum Player {
+    Player0,
+    Player1,
+}
+
+#[derive(PartialEq, Eq, Clone, Copy)]
+pub struct Action(pub usize, pub usize);
+
+pub struct TictactoeGame {
+    pub board: [[Option<Player>; 3]; 3],
+    pub player: Player,
+    pub end_status: Option<EndStatus>,
+}
+```
+To make the game playable, we need to implement a few necessary methods. [Here](/examples/tictactoe.rs#L61) to see the detailed implementation. Then we can implement the corresponding traits for the these types:
+```rust, ignore
 impl mcts::EndStatus for EndStatus {}
 impl mcts::Action for Action {}
 
@@ -86,7 +117,7 @@ impl mcts::GameState<Player, EndStatus, Action> for TictactoeGame {
     }
 }
 ```
-Then you can build a `mcts::SearchTree` and start to search. To make search records reused in the next move, using `mcts::SearchTree::renew(&mut self, selected: &A)` to step forward.
+Then you can build a `mcts::SearchTree` and start to search. To make search records of preceding searches reused in the next move, using `mcts::SearchTree::renew()` to step forward.
 ```rust, ignore
 fn main() {
     let mut game = Rc::new(TictactoeGame::new());
@@ -100,6 +131,8 @@ fn main() {
     }
 }
 ```
+
+The usage of this library is quite easy, isn't it?
 
 ## Todo
 - [ ] Support custom tree policy
