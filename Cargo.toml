@@ -1,6 +1,6 @@
 [package]
 name = "mctser"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["rikkaka <dsywh123@gmail.com>"]
 license = "MIT"
 description = "An incridiblely easy-to-use library for Monte Carlo Tree Search"
