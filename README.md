@@ -72,7 +72,7 @@ pub struct TictactoeGame {
 }
 ```
 
-To make the game playable, we need to implement a few necessary methods. [Here](/examples/tictactoe.rs#L61) to see the detailed implementation. Then we can implement the corresponding traits for the these types:
+To make the game playable, we need to implement a few necessary methods. [Here](/examples/tictactoe.rs#L61) to see the detailed implementation. Then we can implement the corresponding traits for these types:
 ```rust, ignore
 impl mctser::EndStatus for EndStatus {}
 impl mctser::Action for Action {}
