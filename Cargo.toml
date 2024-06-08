@@ -1,13 +1,13 @@
 [package]
 name = "mctser"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["rikkaka <dsywh123@gmail.com>"]
 license = "MIT"
 description = "An incridiblely easy-to-use library for Monte Carlo Tree Search"
 readme = "README.md"
-documentation = "https://docs.rs/mcts"
-homepage = "https://github.com/rikkaka/mcts"
-repository = "https://github.com/rikkaka/mcts"
+documentation = "https://docs.rs/mctser"
+homepage = "https://github.com/rikkaka/mctser"
+repository = "https://github.com/rikkaka/mctser"
 keywords = ["mcts", "game_ai"]
 categories = ["algorithms"]
 edition = "2021"

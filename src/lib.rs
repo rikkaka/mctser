@@ -14,12 +14,13 @@ pub trait EndStatus {}
 /// For example, in tictactoe, the action is the coordinate of the next move
 pub trait Action: Eq + Clone {}
 
-/// The trait for the player
+/// The trait for the player.
 pub trait Player<E: EndStatus> {
+    /// The reward for each player when the game ends with the given outcome.
     fn reward_when_outcome_is(&self, outcome: &E) -> f32;
 }
 
-/// The trait for the game state
+/// The trait for the game state.
 pub trait GameState<P, E, A>
 where
     P: Player<E>,
@@ -38,7 +39,7 @@ where
 
 type RcNode<P, G, E, A> = Rc<RefCell<Node<P, G, E, A>>>;
 
-/// `Node` represents a game status in the search tree. It contains the key methods to simulate a game play and find the best move after the node.
+/// [`Node`] represents a game status in the search tree. It contains the key methods to simulate a game play and find the best move after the node.
 pub struct Node<P, G, E, A> {
     state: Rc<G>,
     last_action: Option<A>,
@@ -199,6 +200,9 @@ where
     }
 }
 
+/// [`SearchTree`] is the main struct to use for Monte Carlo Tree Search.
+/// Pass a [`GameState`] wrapped in a `RC` to [`SearchTree::new`] to create a new search tree.
+/// Then you can call [`SearchTree::search`] to get the best action and [`SearchTree::renew`] to move to the next state.
 pub struct SearchTree<P, G, E, A>
 where
     P: Player<E>,
