@@ -38,23 +38,8 @@ where
 
 type RcNode<P, G, E, A> = Rc<RefCell<Node<P, G, E, A>>>;
 
-pub struct SearchTree<P, G, E, A>
-where
-    P: Player<E>,
-    G: GameState<P, E, A>,
-    E: EndStatus,
-    A: Action,
-{
-    root_node: RcNode<P, G, E, A>,
-}
-
-pub struct Node<P, G, E, A>
-where
-    P: Player<E>,
-    G: GameState<P, E, A>,
-    E: EndStatus,
-    A: Action,
-{
+/// `Node` represents a game status in the search tree. It contains the key methods to simulate a game play and find the best move after the node.
+pub struct Node<P, G, E, A> {
     state: Rc<G>,
     last_action: Option<A>,
     child_nodes: RefCell<Vec<RcNode<P, G, E, A>>>,
@@ -66,67 +51,6 @@ where
 
     /// policy used to select the child node; the three parameters are wi, ni, and np, which is ni of parent node
     tree_policy: Rc<dyn Fn(f32, f32, f32) -> f32>,
-}
-
-impl<P, G, E, A> SearchTree<P, G, E, A>
-where
-    P: Player<E>,
-    G: GameState<P, E, A>,
-    E: EndStatus,
-    A: Action,
-{
-    /// Create a new search tree
-    pub fn new(game_state: Rc<G>) -> Self {
-        SearchTree {
-            root_node: Rc::new(RefCell::new(Node::new(game_state, Rc::new(uct)))),
-        }
-    }
-
-    /// Set the tree policy
-    pub fn with_tree_policy(self, tree_policy: impl Fn(f32, f32, f32) -> f32 + 'static) -> Self {
-        let mut root_node_borrow = self.root_node.borrow_mut();
-        root_node_borrow.tree_policy = Rc::new(tree_policy);
-        drop(root_node_borrow);
-        self
-    }
-
-    /// Search for the best action
-    pub fn search(&self, n: u32) -> Option<A> {
-        let root_node = self.root_node.borrow();
-        for _ in 0..n {
-            root_node.simulate(&root_node.state.player());
-        }
-        let selected_node = root_node.select_most_visited();
-        selected_node.and_then(|v| v.borrow().last_action.clone())
-    }
-
-    /// Renew the root node
-    pub fn renew(&mut self, action: &A) -> Result<(), String> {
-        let root_node = self.root_node.borrow_mut();
-        root_node.expand();
-        drop(root_node);
-
-        let root_node = self.root_node.borrow();
-        let new_root_node = root_node.find_child(action);
-
-        drop(root_node);
-
-        if let Some(node) = new_root_node {
-            self.root_node = node;
-            return Ok(());
-        }
-        Err("The state is not a child of the root node".to_string())
-    }
-
-    /// Get the current game state
-    pub fn get_game_state(&self) -> Rc<G> {
-        self.root_node.borrow().state.clone()
-    }
-
-    /// Get the root node
-    pub fn root_node(&self) -> RcNode<P, G, E, A> {
-        self.root_node.clone()
-    }
 }
 
 impl<P, G, E, A> Debug for Node<P, G, E, A>
@@ -272,6 +196,77 @@ where
 
     pub fn ni(&self) -> f32 {
         self.ni.get()
+    }
+}
+
+pub struct SearchTree<P, G, E, A>
+where
+    P: Player<E>,
+    G: GameState<P, E, A>,
+    E: EndStatus,
+    A: Action,
+{
+    root_node: RcNode<P, G, E, A>,
+}
+
+impl<P, G, E, A> SearchTree<P, G, E, A>
+where
+    P: Player<E>,
+    G: GameState<P, E, A>,
+    E: EndStatus,
+    A: Action,
+{
+    /// Create a new search tree.
+    pub fn new(game_state: Rc<G>) -> Self {
+        SearchTree {
+            root_node: Rc::new(RefCell::new(Node::new(game_state, Rc::new(uct)))),
+        }
+    }
+
+    /// Set the tree policy function. By default, it is UCT tree policy.
+    pub fn with_tree_policy(self, tree_policy: impl Fn(f32, f32, f32) -> f32 + 'static) -> Self {
+        let mut root_node_borrow = self.root_node.borrow_mut();
+        root_node_borrow.tree_policy = Rc::new(tree_policy);
+        drop(root_node_borrow);
+        self
+    }
+
+    /// Search for the best action.
+    pub fn search(&self, n: u32) -> Option<A> {
+        let root_node = self.root_node.borrow();
+        for _ in 0..n {
+            root_node.simulate(&root_node.state.player());
+        }
+        let selected_node = root_node.select_most_visited();
+        selected_node.and_then(|v| v.borrow().last_action.clone())
+    }
+
+    /// Move to the next state and renew the root node with given action.
+    pub fn renew(&mut self, action: &A) -> Result<(), String> {
+        let root_node = self.root_node.borrow_mut();
+        root_node.expand();
+        drop(root_node);
+
+        let root_node = self.root_node.borrow();
+        let new_root_node = root_node.find_child(action);
+
+        drop(root_node);
+
+        if let Some(node) = new_root_node {
+            self.root_node = node;
+            return Ok(());
+        }
+        Err("The state is not a child of the root node".to_string())
+    }
+
+    /// Get the current game state.
+    pub fn get_game_state(&self) -> Rc<G> {
+        self.root_node.borrow().state.clone()
+    }
+
+    /// Get the root node.
+    pub fn root_node(&self) -> RcNode<P, G, E, A> {
+        self.root_node.clone()
     }
 }
 
