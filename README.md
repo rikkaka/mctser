@@ -5,10 +5,10 @@ All you need to do is to implement four required traits in this library for corr
 ## Usage
 Add the dependency to your Cargo.toml
 ```sh
-cargo add mcts
+cargo add mctser
 ```
 
-To use this library, two traits `mcts::GameState` and `mcts::Action`, and two marking traits `mcts::EndStatus` and `mcts::Action` need to be implemented for corresponding types in your game. The definations of the four traits are as follows.
+To use this library, two traits `mctser::GameState` and `mctser::Action`, and two marking traits `mctser::EndStatus` and `mctser::Action` need to be implemented for corresponding types in your game. The definations of the four traits are as follows.
 ```rust
 /// The trait for the end status of the game, like player1 wins, player2 wins, or tie
 pub trait EndStatus {}
@@ -74,10 +74,10 @@ pub struct TictactoeGame {
 
 To make the game playable, we need to implement a few necessary methods. [Here](/examples/tictactoe.rs#L61) to see the detailed implementation. Then we can implement the corresponding traits for the these types:
 ```rust, ignore
-impl mcts::EndStatus for EndStatus {}
-impl mcts::Action for Action {}
+impl mctser::EndStatus for EndStatus {}
+impl mctser::Action for Action {}
 
-impl mcts::Player<EndStatus> for Player {
+impl mctser::Player<EndStatus> for Player {
     fn reward_when_outcome_is(&self, outcome: &EndStatus) -> f32 {
         match outcome {
             EndStatus::Win(winner) => {
@@ -92,7 +92,7 @@ impl mcts::Player<EndStatus> for Player {
     }
 }
 
-impl mcts::GameState<Player, EndStatus, Action> for TictactoeGame {
+impl mctser::GameState<Player, EndStatus, Action> for TictactoeGame {
     fn end_status(&self) -> Option<EndStatus> {
         self.end_status
     }
@@ -124,7 +124,7 @@ Then you can build a `mcts::SearchTree` and start to search. To make search reco
 fn main() {
     // We use `RC` to store the game status. Create a new game and pass it to the search tree through `RC::clone()`.
     let mut game = Rc::new(TictactoeGame::new());
-    let mut search_tree = mcts::SearchTree::new(game.clone());
+    let mut search_tree = mctser::SearchTree::new(game.clone());
 
     while game.end_status.is_none() {
         // Make 1000 simulations to find the best move
